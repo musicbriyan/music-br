@@ -3,35 +3,83 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BR MUSIC — Real Time Spectrum</title>
+<title>BR MUSIC — Real Time Audio</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,sans-serif;background:#050508;color:#fff}
-body{background:radial-gradient(circle at 20% 10%,#40102b33,transparent 35%),radial-gradient(circle at 80% 20%,#002f4030,transparent 35%),#050508}
-header{padding:22px;border-bottom:1px solid #ffffff12;background:#050508dd;backdrop-filter:blur(16px);position:sticky;top:0;z-index:5}
-.wrap{max-width:1050px;margin:auto}.logo{font-weight:900;letter-spacing:4px;font-size:25px;background:linear-gradient(90deg,#ff0055,#8b2cff,#00eaff);-webkit-background-clip:text;color:transparent}.sub{font-size:9px;letter-spacing:3px;color:#777;margin-top:4px}
-main{max-width:1050px;margin:auto;padding:32px 18px 270px}.search{width:100%;height:48px;border-radius:14px;border:1px solid #ffffff12;background:#ffffff08;color:white;padding:0 16px;outline:0}.search:focus{border-color:#00eaff66}
-h2{font-size:16px;letter-spacing:1px}.heading{display:flex;justify-content:space-between;align-items:center;margin:28px 0 15px}.count{font-size:9px;color:#777;letter-spacing:2px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.album{min-height:155px;padding:20px;border:1px solid #ffffff12;border-radius:20px;background:linear-gradient(135deg,#ff005515,#7600ff12,#00eaff0d);cursor:pointer;transition:.2s}.album:hover{transform:translateY(-4px);border-color:#00eaff66}.cover{width:58px;height:58px;border-radius:16px;display:grid;place-items:center;font-size:25px;background:linear-gradient(135deg,#ff0055,#7700ff,#00eaff);margin-bottom:18px;box-shadow:0 0 28px #00eaff22}.album b{font-size:14px}.album small{display:block;color:#777;margin-top:7px}
-#songsView{display:none}.back{border:0;background:none;color:#00eaff;cursor:pointer;margin-bottom:12px}.list{display:flex;flex-direction:column;gap:8px}.song{display:flex;align-items:center;gap:13px;padding:10px 13px;border:1px solid #ffffff0d;background:#ffffff06;border-radius:13px;cursor:pointer}.song.active{border-color:#00eaff66;background:#00eaff09}.song button{width:40px;height:40px;border:0;border-radius:50%;background:linear-gradient(135deg,#ff0055,#7700ff);color:#fff;cursor:pointer}.info{flex:1;min-width:0}.title{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.track{font-size:9px;color:#666;margin-top:5px;letter-spacing:1px}.mini{display:flex;gap:3px}.mini i{display:block;width:3px;height:9px;background:#00eaff;border-radius:3px;animation:m .65s infinite}.mini i:nth-child(2){animation-delay:.1s}.mini i:nth-child(3){animation-delay:.2s}.mini i:nth-child(4){animation-delay:.3s}@keyframes m{50%{height:23px}}
-.visual{position:fixed;left:0;right:0;bottom:120px;height:145px;z-index:3;pointer-events:none;background:linear-gradient(to top,#050508dd,transparent)}canvas{width:100%;height:100%;display:block}
-.player{position:fixed;left:0;right:0;bottom:0;z-index:10;background:#050508ee;backdrop-filter:blur(20px);border-top:1px solid #ffffff12;padding:13px 18px 17px}.playerIn{max-width:1050px;margin:auto}.now{text-align:center;color:#777;font-size:9px;letter-spacing:1px;margin-bottom:9px}.now b{color:#00eaff}.bar{display:flex;gap:8px;align-items:center}.time{font-size:9px;color:#777;width:32px;text-align:center}.progressBox{height:5px;flex:1;background:#ffffff12;border-radius:8px;cursor:pointer}.progress{height:100%;width:0;border-radius:8px;background:linear-gradient(90deg,#ff0055,#7700ff,#00eaff)}.controls{display:flex;justify-content:center;gap:20px;align-items:center;margin-top:10px}.ctrl{border:0;background:none;color:#fff;font-size:19px;cursor:pointer}.play{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#ff0055,#7700ff,#00eaff);box-shadow:0 0 25px #00eaff22}.vol{position:absolute;right:20px;bottom:22px;color:#888}.vol input{width:85px}
-@media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.vol{display:none}}
-@media(max-width:450px){.grid{grid-template-columns:1fr}.visual{height:100px}}
+:root{--bg:#07070b;--panel:#111119;--panel2:#171722;--line:#ffffff12;--muted:#8b8b98;--cyan:#00eaff;--pink:#ff1768;--purple:#853cff}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,Arial,sans-serif;background:var(--bg);color:#fff}
+body{background:
+radial-gradient(circle at 12% 5%,#ff176820,transparent 30%),
+radial-gradient(circle at 88% 12%,#00eaff15,transparent 28%),
+linear-gradient(180deg,#090910,#050508 70%)}
+button,input{font:inherit}
+header{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:#08080ddd;backdrop-filter:blur(22px)}
+.headerIn{max-width:1100px;margin:auto;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:12px}
+.logoMark{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--pink),var(--purple),var(--cyan));box-shadow:0 0 28px #00eaff20}
+.logo{font-weight:900;letter-spacing:4px;font-size:21px}
+.sub{font-size:8px;letter-spacing:2.5px;color:#777;margin-top:4px}
+.status{font-size:9px;color:#777;letter-spacing:1.5px}.status span{color:#65ffb0}
+main{max-width:1100px;margin:auto;padding:28px 20px 300px}
+.searchWrap{position:relative}.searchIcon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#777}
+.search{width:100%;height:52px;border:1px solid var(--line);border-radius:17px;background:#ffffff08;color:#fff;padding:0 18px 0 45px;outline:none;transition:.2s}
+.search:focus{border-color:#00eaff55;background:#ffffff0b;box-shadow:0 0 0 4px #00eaff09}
+.heading{display:flex;align-items:end;justify-content:space-between;margin:34px 0 16px}
+.heading h2{margin:0;font-size:15px;letter-spacing:1.5px}.count{font-size:9px;color:#777;letter-spacing:1.8px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.album{position:relative;overflow:hidden;min-height:175px;padding:21px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,#ffffff09,#ffffff03);cursor:pointer;transition:.22s}
+.album:before{content:"";position:absolute;width:150px;height:150px;right:-70px;top:-70px;border-radius:50%;background:#00eaff18;filter:blur(10px)}
+.album:hover{transform:translateY(-5px);border-color:#00eaff55;box-shadow:0 18px 40px #0008}
+.cover{position:relative;width:64px;height:64px;border-radius:18px;display:grid;place-items:center;font-size:28px;background:linear-gradient(135deg,var(--pink),var(--purple),var(--cyan));margin-bottom:20px;box-shadow:0 10px 30px #0007}
+.album b{font-size:14px;display:block;position:relative}.album small{display:block;color:#777;margin-top:8px;position:relative}
+#songsView{display:none}.back{border:1px solid var(--line);background:#ffffff08;color:#ddd;border-radius:10px;padding:8px 12px;cursor:pointer;margin-bottom:14px}.back:hover{border-color:#00eaff55;color:#fff}
+.list{display:flex;flex-direction:column;gap:9px}
+.song{display:flex;align-items:center;gap:13px;padding:11px 13px;border:1px solid var(--line);background:#ffffff05;border-radius:15px;cursor:pointer;transition:.18s}
+.song:hover{background:#ffffff09;border-color:#ffffff20}.song.active{border-color:#00eaff55;background:#00eaff09}
+.song button{flex:0 0 40px;width:40px;height:40px;border:0;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;cursor:pointer;box-shadow:0 5px 20px #0006}
+.info{flex:1;min-width:0}.title{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.track{font-size:9px;color:#666;margin-top:5px;letter-spacing:1px}
+.mini{display:flex;gap:3px;align-items:center;height:24px;opacity:.35}.song.active .mini{opacity:1}.mini i{display:block;width:3px;height:9px;background:var(--cyan);border-radius:3px;animation:m .65s infinite}.mini i:nth-child(2){animation-delay:.1s}.mini i:nth-child(3){animation-delay:.2s}.mini i:nth-child(4){animation-delay:.3s}@keyframes m{50%{height:22px}}
+.empty{text-align:center;padding:40px;color:#666;border:1px dashed #ffffff14;border-radius:16px}
+.visual{position:fixed;left:0;right:0;bottom:112px;height:150px;z-index:3;pointer-events:none;background:linear-gradient(to top,#07070bee,transparent)}
+canvas{width:100%;height:100%;display:block}
+.player{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#09090ff2;backdrop-filter:blur(24px);border-top:1px solid var(--line);padding:12px 20px 15px}
+.playerIn{max-width:1100px;margin:auto;position:relative}.now{text-align:center;color:#777;font-size:9px;letter-spacing:1px;margin-bottom:9px}.now b{color:var(--cyan)}
+.bar{display:flex;gap:9px;align-items:center}.time{font-size:9px;color:#777;width:34px;text-align:center}
+.progressBox{height:6px;flex:1;background:#ffffff10;border-radius:8px;cursor:pointer}.progress{height:100%;width:0;border-radius:8px;background:linear-gradient(90deg,var(--pink),var(--purple),var(--cyan));transition:width .05s linear}
+.controls{display:flex;justify-content:center;gap:17px;align-items:center;margin-top:9px}.ctrl{border:0;background:none;color:#fff;font-size:18px;cursor:pointer;width:38px;height:38px;border-radius:50%}.ctrl:hover{background:#ffffff0c}
+.play{width:48px;height:48px;background:linear-gradient(135deg,var(--pink),var(--purple),var(--cyan));box-shadow:0 0 28px #00eaff20}
+.vol{position:absolute;right:0;bottom:7px;display:flex;align-items:center;gap:7px;color:#888;font-size:13px}.vol input{width:90px;accent-color:#00eaff}
+.toast{position:fixed;left:50%;bottom:145px;transform:translate(-50%,10px);opacity:0;pointer-events:none;background:#15151eeF;border:1px solid #ffffff18;padding:10px 15px;border-radius:12px;color:#ddd;font-size:11px;z-index:50;transition:.25s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.status{display:none}.vol{display:none}.visual{height:110px}}
+@media(max-width:450px){.grid{grid-template-columns:1fr}.headerIn{padding:15px}.logo{font-size:18px}.logoMark{width:38px;height:38px}.main{padding-inline:14px}main{padding-inline:14px}.visual{height:90px}.title{font-size:13px}}
 </style>
 </head>
 <body>
-<header><div class="wrap"><div class="logo">BR MUSIC</div><div class="sub">REAL TIME AUDIO VISUALIZER</div></div></header>
+<header><div class="headerIn">
+  <div class="brand"><div class="logoMark">♫</div><div><div class="logo">BR MUSIC</div><div class="sub">REAL TIME AUDIO VISUALIZER</div></div></div>
+  <div class="status">● <span>PLAYER READY</span></div>
+</div></header>
+
 <main>
-<input id="search" class="search" placeholder="Cari judul musik...">
-<section id="albumsView"><div class="heading"><h2>ALBUM MUSIK</h2><span id="albumCount" class="count"></span></div><div id="albums" class="grid"></div></section>
-<section id="songsView"><button id="back" class="back">← KEMBALI</button><div class="heading"><h2 id="albumTitle"></h2><span id="songCount" class="count"></span></div><div id="list" class="list"></div></section>
+  <div class="searchWrap"><span class="searchIcon">⌕</span><input id="search" class="search" placeholder="Cari judul musik..." autocomplete="off"></div>
+  <section id="albumsView">
+    <div class="heading"><h2>ALBUM MUSIK</h2><span id="albumCount" class="count"></span></div>
+    <div id="albums" class="grid"></div>
+  </section>
+  <section id="songsView">
+    <button id="back" class="back">← Kembali ke album</button>
+    <div class="heading"><h2 id="albumTitle"></h2><span id="songCount" class="count"></span></div>
+    <div id="list" class="list"></div>
+  </section>
 </main>
+
 <div class="visual"><canvas id="spectrum"></canvas></div>
+<div id="toast" class="toast"></div>
 <div class="player"><div class="playerIn">
-<div class="now">NOW PLAYING : <b id="now">Belum ada musik</b></div>
-<div class="bar"><span id="cur" class="time">0:00</span><div id="progressBox" class="progressBox"><div id="progress" class="progress"></div></div><span id="dur" class="time">0:00</span></div>
-<div class="controls"><button id="prev" class="ctrl">⏮</button><button id="play" class="ctrl play">▶</button><button id="next" class="ctrl">⏭</button></div>
-<div class="vol">🔊 <input id="volume" type="range" min="0" max="1" step=".01" value=".8"></div>
+  <div class="now">NOW PLAYING : <b id="now">Belum ada musik</b></div>
+  <div class="bar"><span id="cur" class="time">0:00</span><div id="progressBox" class="progressBox"><div id="progress" class="progress"></div></div><span id="dur" class="time">0:00</span></div>
+  <div class="controls"><button id="prev" class="ctrl" title="Sebelumnya">⏮</button><button id="play" class="ctrl play" title="Putar">▶</button><button id="next" class="ctrl" title="Berikutnya">⏭</button></div>
+  <div class="vol">🔊 <input id="volume" type="range" min="0" max="1" step=".01" value=".8"></div>
 </div></div>
 
 <script>
@@ -46,116 +94,133 @@ const songs=[
  {title:"Wiz Khalifa - See You Again ft. Charlie Put",album:"MUSIC INGGRIS",audio:"https://res.cloudinary.com/seq4ghvg/video/upload/v1786422854/Wiz_Khalifa_-_See_You_Again_ft._Charlie_Puth_Lyrics_-_Gentle_Sounds_128k.mp3"},
  {title:"SAMSONS - DI UJUNG JALAN",album:"MUSIC INDO",audio:"https://res.cloudinary.com/seq4ghvg/video/upload/v1786423126/SAMSONS_-_DI_UJUNG_JALAN.mp3"}
 ];
-
-const $=id=>document.getElementById(id), audio=new Audio();
-audio.preload="auto";audio.crossOrigin="anonymous";audio.volume=.8;
-let current=-1,selectedAlbum=null;
+const $=id=>document.getElementById(id);
+const audio=new Audio();
+audio.preload="metadata"; audio.crossOrigin="anonymous"; audio.volume=.8;
+let current=-1,selectedAlbum=null,viewSongs=[];
 let audioCtx=null,analyser=null,source=null,data=null,analyserReady=false;
 
-function fmt(x){return isFinite(x)?Math.floor(x/60)+":"+String(Math.floor(x%60)).padStart(2,"0"):"0:00"}
+function fmt(x){return Number.isFinite(x)?Math.floor(x/60)+":"+String(Math.floor(x%60)).padStart(2,"0"):"0:00"}
 function albumNames(){return [...new Set(songs.map(x=>x.album))]}
+function showToast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(showToast.t);showToast.t=setTimeout(()=>t.classList.remove("show"),2400)}
 
 function renderAlbums(){
- $("albums").innerHTML="";
- albumNames().forEach(a=>{
-  const n=songs.filter(x=>x.album===a).length;
-  const e=document.createElement("div");e.className="album";
-  e.innerHTML=`<div class="cover">♫</div><b>${a}</b><small>${n} MUSIK</small>`;
-  e.onclick=()=>openAlbum(a);$("albums").appendChild(e);
- });
- $("albumCount").textContent=albumNames().length+" ALBUM";
+  $("albums").innerHTML="";
+  const names=albumNames();
+  $("albumCount").textContent=names.length+" ALBUM";
+  names.forEach(a=>{
+    const n=songs.filter(x=>x.album===a).length;
+    const e=document.createElement("div");e.className="album";
+    e.innerHTML=`<div class="cover">♫</div><b>${a}</b><small>${n} MUSIK</small>`;
+    e.onclick=()=>openAlbum(a); $("albums").appendChild(e);
+  });
 }
-function openAlbum(a){selectedAlbum=a;$("albumsView").style.display="none";$("songsView").style.display="block";$("albumTitle").textContent=a;renderSongs(songs.filter(x=>x.album===a))}
-$("back").onclick=()=>{selectedAlbum=null;$("songsView").style.display="none";$("albumsView").style.display="block";renderAlbums()}
+function openAlbum(a){
+  selectedAlbum=a; $("search").value="";
+  $("albumsView").style.display="none"; $("songsView").style.display="block";
+  $("albumTitle").textContent=a; renderSongs(songs.filter(x=>x.album===a));
+}
+$("back").onclick=()=>{
+  selectedAlbum=null; $("search").value="";
+  $("songsView").style.display="none"; $("albumsView").style.display="block"; renderAlbums();
+};
 
 function renderSongs(arr){
- $("list").innerHTML="";$("songCount").textContent=arr.length+" MUSIK";
- arr.forEach(s=>{
-  const i=songs.indexOf(s),e=document.createElement("div");e.className="song"+(i===current?" active":"");
-  e.innerHTML=`<button>${i===current&&!audio.paused?"❚❚":"▶"}</button><div class="info"><div class="title">${s.title}</div><div class="track">TRACK ${String(i+1).padStart(2,"0")}</div></div><div class="mini"><i></i><i></i><i></i><i></i></div>`;
-  e.onclick=()=>i===current?toggle():load(i,true);$("list").appendChild(e);
- });
+  viewSongs=arr; $("list").innerHTML=""; $("songCount").textContent=arr.length+" MUSIK";
+  if(!arr.length){$("list").innerHTML='<div class="empty">Musik tidak ditemukan.</div>';return}
+  arr.forEach(s=>{
+    const i=songs.indexOf(s),e=document.createElement("div");
+    e.className="song"+(i===current?" active":"");
+    e.innerHTML=`<button>${i===current&&!audio.paused?"❚❚":"▶"}</button><div class="info"><div class="title">${escapeHtml(s.title)}</div><div class="track">TRACK ${String(i+1).padStart(2,"0")}</div></div><div class="mini"><i></i><i></i><i></i><i></i></div>`;
+    e.onclick=()=>i===current?toggle():load(i,true); $("list").appendChild(e);
+  });
 }
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 
 async function setupAnalyser(){
- if(analyserReady)return true;
- try{
-  audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-  analyser=audioCtx.createAnalyser();
-  analyser.fftSize=512;
-  analyser.minDecibels=-90;
-  analyser.maxDecibels=-10;
-  analyser.smoothingTimeConstant=.78;
-  source=audioCtx.createMediaElementSource(audio);
-  source.connect(analyser);analyser.connect(audioCtx.destination);
-  data=new Uint8Array(analyser.frequencyBinCount);
-  analyserReady=true;
-  return true;
- }catch(err){
-  console.warn("Web Audio Analyzer tidak tersedia:",err);
-  return false;
- }
+  if(analyserReady)return true;
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) throw new Error("Web Audio API tidak tersedia");
+    audioCtx=new AC();
+    analyser=audioCtx.createAnalyser();
+    analyser.fftSize=512; analyser.minDecibels=-90; analyser.maxDecibels=-10; analyser.smoothingTimeConstant=.78;
+    source=audioCtx.createMediaElementSource(audio);
+    source.connect(analyser); analyser.connect(audioCtx.destination);
+    data=new Uint8Array(analyser.frequencyBinCount); analyserReady=true; return true;
+  }catch(err){console.warn("Spectrum:",err); return false}
 }
 
-async function load(i,autoplay=false){
- if(i<0||i>=songs.length)return;
- current=i;const s=songs[i];$("now").textContent=s.title;
- audio.pause();audio.src=s.audio;audio.load();
- renderSongs(selectedAlbum?songs.filter(x=>x.album===selectedAlbum):songs);
- if(autoplay){
+async function playAudio(){
   try{
-   const ok=await setupAnalyser();
-   if(audioCtx&&audioCtx.state==="suspended")await audioCtx.resume();
-   await audio.play();
-  }catch(e){console.error(e);alert("Audio tidak dapat diputar. Jika file bisa diputar di browser tetapi spectrum tidak aktif, Cloudinary perlu mengizinkan CORS.");}
- }
+    if(!analyserReady) await setupAnalyser();
+    if(audioCtx&&audioCtx.state==="suspended") await audioCtx.resume();
+    await audio.play();
+  }catch(e){
+    console.error(e);
+    showToast("Musik tidak dapat diputar. Periksa koneksi atau CORS file audio.");
+  }
+}
+async function load(i,autoplay=false){
+  if(i<0||i>=songs.length)return;
+  current=i; const s=songs[i];
+  $("now").textContent=s.title; $("cur").textContent="0:00"; $("dur").textContent="0:00"; $("progress").style.width="0%";
+  audio.pause(); audio.removeAttribute("src"); audio.src=s.audio; audio.load();
+  renderSongs(selectedAlbum?songs.filter(x=>x.album===selectedAlbum):viewSongs.length?viewSongs:songs);
+  if(autoplay) await playAudio();
 }
 async function toggle(){
- if(current<0)return load(0,true);
- if(audio.paused){
-  try{if(!analyserReady)await setupAnalyser();if(audioCtx&&audioCtx.state==="suspended")await audioCtx.resume();await audio.play()}catch(e){console.error(e)}
- }else audio.pause();
+  if(current<0){await load(0,true);return}
+  if(audio.paused) await playAudio(); else audio.pause();
 }
 $("play").onclick=toggle;
 $("prev").onclick=()=>load((current-1+songs.length)%songs.length,true);
 $("next").onclick=()=>load((current+1)%songs.length,true);
 
-audio.onplay=()=>{$("play").textContent="❚❚";renderSongs(selectedAlbum?songs.filter(x=>x.album===selectedAlbum):songs)}
-audio.onpause=()=>{$("play").textContent="▶";renderSongs(selectedAlbum?songs.filter(x=>x.album===selectedAlbum):songs)}
+audio.onplay=()=>{$("play").textContent="❚❚";renderSongs(selectedAlbum?songs.filter(x=>x.album===selectedAlbum):viewSongs.length?viewSongs:songs)}
+audio.onpause=()=>{$("play").textContent="▶";renderSongs(selectedAlbum?songs.filter(x=>x.album===selectedAlbum):viewSongs.length?viewSongs:songs)}
 audio.onended=()=>load((current+1)%songs.length,true);
-audio.onloadedmetadata=()=>$("dur").textContent=fmt(audio.duration);
-audio.ontimeupdate=()=>{if(audio.duration){$("cur").textContent=fmt(audio.currentTime);$("progress").style.width=(audio.currentTime/audio.duration*100)+"%"}}
-audio.onerror=()=>{$("now").textContent="Gagal memuat musik";console.error("Audio error",audio.error,audio.src)}
-$("volume").oninput=e=>audio.volume=e.target.value;
-$("progressBox").onclick=e=>{if(audio.duration){const r=e.currentTarget.getBoundingClientRect();audio.currentTime=(e.clientX-r.left)/r.width*audio.duration}};
-
-$("search").oninput=e=>{
- const q=e.target.value.toLowerCase().trim(),base=selectedAlbum?songs.filter(x=>x.album===selectedAlbum):songs,res=base.filter(x=>x.title.toLowerCase().includes(q));
- if(!q&&!selectedAlbum){$("songsView").style.display="none";$("albumsView").style.display="block";renderAlbums();return}
- $("albumsView").style.display="none";$("songsView").style.display="block";$("albumTitle").textContent=selectedAlbum||"HASIL PENCARIAN";renderSongs(res)
+audio.onloadedmetadata=()=>{$("dur").textContent=fmt(audio.duration)}
+audio.ontimeupdate=()=>{
+  if(audio.duration){$("cur").textContent=fmt(audio.currentTime);$("progress").style.width=(audio.currentTime/audio.duration*100)+"%"}
+}
+audio.onerror=()=>{console.error("Audio error",audio.error,audio.src);showToast("Gagal memuat file musik.");$("now").textContent="Gagal memuat musik"}
+$("volume").oninput=e=>audio.volume=Number(e.target.value);
+$("progressBox").onclick=e=>{
+  if(audio.duration){const r=e.currentTarget.getBoundingClientRect();audio.currentTime=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*audio.duration}
 };
 
-/* REAL-TIME SPECTRUM */
+$("search").oninput=e=>{
+  const q=e.target.value.toLowerCase().trim();
+  if(!q&&!selectedAlbum){$("songsView").style.display="none";$("albumsView").style.display="block";renderAlbums();return}
+  const base=selectedAlbum?songs.filter(x=>x.album===selectedAlbum):songs;
+  const res=base.filter(x=>x.title.toLowerCase().includes(q)||x.album.toLowerCase().includes(q));
+  $("albumsView").style.display="none";$("songsView").style.display="block";
+  $("albumTitle").textContent=selectedAlbum||"HASIL PENCARIAN";renderSongs(res);
+};
+
+/* Spectrum aman: hanya membaca analyser setelah node benar-benar siap. */
 const canvas=$("spectrum"),ctx=canvas.getContext("2d");
-function resize(){const d=Math.min(devicePixelRatio||1,2),r=canvas.getBoundingClientRect();canvas.width=r.width*d;canvas.height=r.height*d;ctx.setTransform(d,0,0,d,0,0)}
-function drawSpectrum(){
- requestAnimationFrame(drawSpectrum);
- const w=canvas.clientWidth,h=canvas.clientHeight;ctx.clearRect(0,0,w,h);
- if(!analyser||!data||audio.paused){return}
- analyser.getByteFrequencyData(data);
- const bars=Math.min(96,Math.max(36,Math.floor(w/12))),gap=3,bw=(w-gap*(bars-1))/bars;
- for(let i=0;i<bars;i++){
-  /* log-like frequency mapping: bass gets more visual weight */
-  const p=i/(bars-1),idx=Math.floor(Math.pow(p,1.65)*(data.length-1));
-  const v=data[idx]/255;
-  const bh=Math.max(3,v*h*.96),x=i*(bw+gap),y=h-bh;
-  const g=ctx.createLinearGradient(0,y,0,h);g.addColorStop(0,"#00eaff");g.addColorStop(.45,"#8b2cff");g.addColorStop(1,"#ff0055");
-  ctx.fillStyle=g;ctx.shadowBlur=12;ctx.shadowColor="#00eaff";
-  if(ctx.roundRect){ctx.beginPath();ctx.roundRect(x,y,bw,bh,3);ctx.fill()}else ctx.fillRect(x,y,bw,bh);
- }
- ctx.shadowBlur=0;
+function resize(){
+  const d=Math.min(devicePixelRatio||1,2),r=canvas.getBoundingClientRect();
+  canvas.width=Math.max(1,r.width*d);canvas.height=Math.max(1,r.height*d);ctx.setTransform(d,0,0,d,0,0);
 }
-window.onresize=resize;resize();drawSpectrum();renderAlbums();
+function drawSpectrum(){
+  requestAnimationFrame(drawSpectrum);
+  const w=canvas.clientWidth,h=canvas.clientHeight;ctx.clearRect(0,0,w,h);
+  if(!analyser||!data||audio.paused)return;
+  analyser.getByteFrequencyData(data);
+  const bars=Math.min(96,Math.max(36,Math.floor(w/12))),gap=3,bw=(w-gap*(bars-1))/bars;
+  for(let i=0;i<bars;i++){
+    const p=i/(bars-1),idx=Math.floor(Math.pow(p,1.65)*(data.length-1)),v=data[idx]/255;
+    const bh=Math.max(3,v*h*.96),x=i*(bw+gap),y=h-bh;
+    const g=ctx.createLinearGradient(0,y,0,h);g.addColorStop(0,"#00eaff");g.addColorStop(.45,"#853cff");g.addColorStop(1,"#ff1768");
+    ctx.fillStyle=g;ctx.shadowBlur=10;ctx.shadowColor="#00eaff";
+    if(ctx.roundRect){ctx.beginPath();ctx.roundRect(x,y,bw,bh,3);ctx.fill()}else ctx.fillRect(x,y,bw,bh);
+  }
+  ctx.shadowBlur=0;
+}
+window.addEventListener("resize",resize);resize();drawSpectrum();renderAlbums();
 </script>
 </body>
 </html>
